@@ -8,7 +8,7 @@ RUN python get-pip.py
 RUN cd /opt && git clone https://github.com/MarkBaggett/domain_stats.git
 RUN pip install python-whois
 RUN mkdir /var/log/domain_stats
-RUN ln -sf /dev/stderr /var/log/domain_stats/error.log
+RUN ln -sf /dev/stderr /var/log/domain_stats/domain_stats.log
 RUN useradd -ms /bin/bash domain_stats
 RUN chown -R domain_stats: /opt/domain_stats
 USER domain_stats
