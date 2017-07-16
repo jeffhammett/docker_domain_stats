@@ -27,9 +27,29 @@ Keep in mind that doing domain information lookups can add around a **half secon
 One recommended way to minimize cache use is to only perform WHOIS lookups if a domain is not a top 1 million site. The Logstash code to do this is below:
 
 ```js
+# This example requires the community Logstash plugin logstash-filter-tld
+# It breaks down a domain such as www.hasecuritysolutions.com into things such as
+#
+# highest_registered_domain = hasecuritysolutions.com
+# top_level_domain = com
+# subdomain = www
+
 filter {
   if [type] == "dns" {
+    # Assumes the domain is in the query field from a DNS log
+    tld {
+      source => "query"
+    }
+    # Rename fields from the tld filter plugin
+    mutate {
+      rename => { "[SubLog][sessionid]" => "sub_session_id" }
+      rename => { "[tld][domain]" => "highest_registered_domain" }
+      rename => { "[tld][trd]" => "subdomain" }
+      rename => { "[tld][tld]" => "top_level_domain" }
+      rename => { "[tld][sld]" => "parent_domain" }
+    }
     if [highest_registered_domain] {
+      # Check if domain is a member of the Alexa/Cisco Umbrella top 1 million sites
       rest {
         request => {
           url => "http://localhost:20000/alexa/%{highest_registered_domain}"
@@ -38,6 +58,7 @@ filter {
         json => false
         target => "site"
       }
+      # If site value is 0 it is not a top 1 million site, if it is above 1 it is
       if [site] != "0" and [site] {
         mutate {
           add_tag => [ "top-1m" ]
@@ -46,6 +67,7 @@ filter {
       }
     }
     if "alexa" not in [tags] and [query] !~ "\.internal\.domain$" and [highest_registered_domain] and [highest_registered_domain] != "" {
+      # Site is not a top 1 million site and not the internal domain so lookup the domain's creation date
       rest {
         request => {
           url => "http://localhost:20000/domain/creation_date/%{highest_registered_domain}"
