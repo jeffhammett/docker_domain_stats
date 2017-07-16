@@ -67,7 +67,7 @@ filter {
       }
     }
     if "alexa" not in [tags] and [query] !~ "\.internal\.domain$" and [highest_registered_domain] and [highest_registered_domain] != "" {
-      # Site is not a top 1 million site and not the internal domain so lookup the domain's creation date
+      # Site is not a top 1 million site and not the internal domain so lookup the domain\'s creation date
       rest {
         request => {
           url => "http://localhost:20000/domain/creation_date/%{highest_registered_domain}"
