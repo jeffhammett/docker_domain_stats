@@ -2,8 +2,9 @@ FROM centos:latest
 
 MAINTAINER Justin Henderson justin@hasecuritysolutions.com
 
-RUN yum install -y python git
+RUN yum install -y python git python-pip
 RUN cd /opt && git clone https://github.com/MarkBaggett/domain_stats.git
+RUN pip install python-whois
 RUN mkdir /var/log/domain_stats
 RUN ln -sf /dev/stderr /var/log/domain_stats/error.log
 RUN useradd -ms /bin/bash domain_stats
