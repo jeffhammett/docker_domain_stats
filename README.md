@@ -16,7 +16,7 @@ sudo docker run -d --name container_name_goes_here -p 20000:20000 lightforge/dom
 The docker image does not currently automatically update the top-1m.csv. The below example shows how to download a new top 1 million site list and have a domain_stats container use it. This could be scheduled as a cron job on your host to keep a current Alexa/Cisco Umbrella top-1m.csv in use.
 
 ```sh
-wget -q http://s3.amazonaws.com/alexa-static/top-1m.csv.zip; unzip top-1m.csv.zip;
+wget -q http://s3-us-west-1.amazonaws.com/umbrella-static/top-1m.csv.zip; unzip top-1m.csv.zip;
 sudo docker cp top-1m.csv container_name_goes_here:/opt/domain_stats/top-1m.csv
 sudo docker restart so-domainstats
 ```
